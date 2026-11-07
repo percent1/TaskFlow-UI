@@ -1,7 +1,20 @@
 
 import { useEffect, useState } from 'react'
+import {
+  NavLink,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
+
 import './App.css'
 import Auth from './components/Auth'
+import Dashboard from './pages/Dashboard'
+import Tasks from './pages/Tasks'
+import TaskDetails from './pages/TaskDetails'
+import Settings from './pages/Settings'
 import api from './api/axios'
 
 // Convert backend task properties into frontend task properties.
@@ -12,21 +25,43 @@ function formatTask(task) {
     description: task.description || '',
     completed: task.completed,
     dueDate: task.dueDate || '',
+    createdAt: task.createdAt || null,
   }
 }
 
+// Find and display an individual task.
+function TaskDetailsRoute({ tasks, toggleTask }) {
+  const { taskId } = useParams()
+
+  const selectedTask = tasks.find(
+    task => String(task.id) === taskId
+  )
+
+  return (
+    <TaskDetails
+      task={selectedTask}
+      toggleTask={toggleTask}
+    />
+  )
+}
+
 function App() {
+  const location = useLocation()
+
   // Authentication state.
   const [token, setToken] = useState(
     () => sessionStorage.getItem('token')
   )
+
+  // Current authenticated user's name.
+  const [currentUserName, setCurrentUserName] = useState('User')
 
   // Task state.
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Dashboard controls.
+  // Task page controls.
   const [filter, setFilter] = useState('All')
   const [showForm, setShowForm] = useState(false)
 
@@ -36,9 +71,10 @@ function App() {
   const [dueDate, setDueDate] = useState('')
 
   // Called after successful login.
-  function handleLogin(newToken) {
+  function handleLogin(newToken, userName) {
     sessionStorage.setItem('token', newToken)
     setToken(newToken)
+    setCurrentUserName(userName || 'User')
   }
 
   // Log out and remove the stored token.
@@ -48,7 +84,27 @@ function App() {
     setTasks([])
     setError('')
     setShowForm(false)
+    setCurrentUserName('User')
   }
+
+  // Load current user details.
+  useEffect(() => {
+    if (!token) return
+
+    async function fetchCurrentUser() {
+      try {
+        const response = await api.get('/users/me')
+        setCurrentUserName(response.data.name)
+      } catch (err) {
+        if (err.response?.status === 401) {
+          handleLogout()
+          setError('Your session has expired. Please sign in again.')
+        }
+      }
+    }
+
+    fetchCurrentUser()
+  }, [token])
 
   // Load tasks belonging to the authenticated user.
   useEffect(() => {
@@ -65,6 +121,7 @@ function App() {
         if (err.response?.status === 401) {
           sessionStorage.removeItem('token')
           setToken(null)
+          setCurrentUserName('User')
           setError('Your session has expired. Please sign in again.')
         } else {
           setError(
@@ -79,6 +136,13 @@ function App() {
 
     fetchTasks()
   }, [token])
+
+  // Close the task modal when leaving the Tasks page.
+  useEffect(() => {
+    if (location.pathname !== '/tasks') {
+      setShowForm(false)
+    }
+  }, [location.pathname])
 
   // Add a new task through the backend API.
   async function addTask(event) {
@@ -162,33 +226,28 @@ function App() {
     }
   }
 
-  // Dashboard statistics.
-  const totalTasks = tasks.length
-
-  const completedTasks = tasks.filter(
-    task => task.completed
-  ).length
-
-  const activeTasks = totalTasks - completedTasks
-
-  const completionRate = totalTasks
-    ? Math.round((completedTasks / totalTasks) * 100)
-    : 0
-
-  // Filter tasks for display.
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'Active') return !task.completed
-    if (filter === 'Completed') return task.completed
-    return true
-  })
-
   // Show login/register screen when no token exists.
   if (!token) {
     return <Auth onLogin={handleLogin} />
   }
 
+  const isTasksPage = location.pathname === '/tasks'
+  const isTaskDetailsPage = location.pathname.startsWith('/tasks/')
+  const isSettingsPage = location.pathname === '/settings'
+
+  let currentPage = 'Dashboard'
+
+  if (isTasksPage) {
+    currentPage = 'My Tasks'
+  } else if (isTaskDetailsPage) {
+    currentPage = 'Task Details'
+  } else if (isSettingsPage) {
+    currentPage = 'Settings'
+  }
+
   return (
     <div className="app-container">
+      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-icon">✓</div>
@@ -198,22 +257,40 @@ function App() {
         <nav className="sidebar-nav">
           <p className="nav-label">MENU</p>
 
-          <a href="#dashboard" className="nav-item active">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              isActive ? 'nav-item active' : 'nav-item'
+            }
+          >
             <span>▦</span>
             Dashboard
-          </a>
+          </NavLink>
 
-          <a href="#tasks" className="nav-item">
+          <NavLink
+            to="/tasks"
+            className={({ isActive }) =>
+              isActive || isTaskDetailsPage
+                ? 'nav-item active'
+                : 'nav-item'
+            }
+          >
             <span>☑</span>
             My Tasks
-          </a>
+          </NavLink>
 
           <p className="nav-label">PREFERENCES</p>
 
-          <a href="#settings" className="nav-item">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              isActive ? 'nav-item active' : 'nav-item'
+            }
+          >
             <span>⚙</span>
             Settings
-          </a>
+          </NavLink>
         </nav>
 
         <div className="sidebar-footer">
@@ -222,16 +299,22 @@ function App() {
         </div>
       </aside>
 
+      {/* Main content */}
       <main className="main-content">
         <header className="topbar">
           <div>
-            <p className="breadcrumb">Workspace / Dashboard</p>
+            <p className="breadcrumb">
+              Workspace / {currentPage}
+            </p>
           </div>
 
           <div className="topbar-actions">
             <div className="user-profile">
-              <div className="avatar">U</div>
-              <span>My Account</span>
+              <div className="avatar">
+                {currentUserName.charAt(0).toUpperCase()}
+              </div>
+
+              <span>{currentUserName}</span>
             </div>
 
             <button
@@ -243,164 +326,57 @@ function App() {
           </div>
         </header>
 
-        {/* Welcome section */}
-        <section className="welcome-section" id="dashboard">
-          <div>
-            <p className="welcome-date">YOUR WORKSPACE</p>
-            <h1>Welcome back!</h1>
-            <p className="welcome-description">
-              Here's an overview of your tasks and productivity.
-            </p>
-          </div>
-        </section>
+        {/* Page routing */}
+        <Routes>
+          <Route
+            path="/"
+            element={<Dashboard tasks={tasks} />}
+          />
 
-        {/* Dashboard statistics */}
-        <section className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon purple">▦</div>
-            <div>
-              <p>Total Tasks</p>
-              <h2>{totalTasks}</h2>
-            </div>
-          </div>
+          <Route
+            path="/tasks"
+            element={
+              <Tasks
+                tasks={tasks}
+                loading={loading}
+                error={error}
+                filter={filter}
+                setFilter={setFilter}
+                setError={setError}
+                setShowForm={setShowForm}
+                toggleTask={toggleTask}
+                deleteTask={deleteTask}
+              />
+            }
+          />
 
-          <div className="stat-card">
-            <div className="stat-icon blue">◷</div>
-            <div>
-              <p>Active Tasks</p>
-              <h2>{activeTasks}</h2>
-            </div>
-          </div>
+          <Route
+            path="/tasks/:taskId"
+            element={
+              <TaskDetailsRoute
+                tasks={tasks}
+                toggleTask={toggleTask}
+              />
+            }
+          />
 
-          <div className="stat-card">
-            <div className="stat-icon green">✓</div>
-            <div>
-              <p>Completed Tasks</p>
-              <h2>{completedTasks}</h2>
-            </div>
-          </div>
+          <Route
+            path="/settings"
+            element={
+              <Settings
+                onNameUpdated={setCurrentUserName}
+              />
+            }
+          />
 
-          <div className="stat-card">
-            <div className="stat-icon orange">↗</div>
-            <div>
-              <p>Completion Rate</p>
-              <h2>{completionRate}%</h2>
-            </div>
-          </div>
-        </section>
-
-        {/* Tasks section */}
-        <section className="tasks-section" id="tasks">
-          <div className="section-heading">
-            <div>
-              <h2>My Tasks</h2>
-              <p>Manage and track your daily activities.</p>
-            </div>
-
-            <div className="task-header-actions">
-              <div className="task-filters">
-                {['All', 'Active', 'Completed'].map(option => (
-                  <button
-                    key={option}
-                    className={
-                      filter === option
-                        ? 'filter-button selected'
-                        : 'filter-button'
-                    }
-                    onClick={() => setFilter(option)}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                className="primary-button"
-                onClick={() => {
-                  setError('')
-                  setShowForm(true)
-                }}
-              >
-                + Add New Task
-              </button>
-            </div>
-          </div>
-
-          {error && (
-            <div className="auth-error" role="alert">
-              {error}
-            </div>
-          )}
-
-          {/* Task list */}
-          <div className="task-list">
-            {loading ? (
-              <div className="empty-state">
-                <h3>Loading tasks...</h3>
-                <p>Please wait while we retrieve your tasks.</p>
-              </div>
-            ) : filteredTasks.length === 0 ? (
-              <div className="empty-state">
-                <h3>No tasks found</h3>
-                <p>Create a task to start organising your work.</p>
-              </div>
-            ) : (
-              filteredTasks.map(task => (
-                <div className="task-card" key={task.id}>
-                  <div className="task-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => toggleTask(task.id)}
-                      aria-label={`Mark ${task.title} as ${
-                        task.completed ? 'active' : 'completed'
-                      }`}
-                    />
-                  </div>
-
-                  <div className="task-details">
-                    <h3
-                      className={
-                        task.completed ? 'completed-title' : ''
-                      }
-                    >
-                      {task.title}
-                    </h3>
-
-                    <p>{task.description}</p>
-
-                    {task.dueDate && (
-                      <small>Due: {task.dueDate}</small>
-                    )}
-                  </div>
-
-                  <div className="task-meta">
-                    <span
-                      className={
-                        task.completed
-                          ? 'status-completed'
-                          : 'status-active'
-                      }
-                    >
-                      {task.completed ? 'Completed' : 'In Progress'}
-                    </span>
-                  </div>
-
-                  <button
-                    className="delete-button"
-                    onClick={() => deleteTask(task.id)}
-                    aria-label={`Delete ${task.title}`}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
+        </Routes>
 
         {/* Add task modal */}
-        {showForm && (
+        {showForm && isTasksPage && (
           <div
             className="modal-overlay"
             onClick={() => setShowForm(false)}
@@ -430,6 +406,7 @@ function App() {
 
               <form className="task-form" onSubmit={addTask}>
                 <label htmlFor="task-title">Task Title</label>
+
                 <input
                   id="task-title"
                   type="text"
@@ -440,7 +417,10 @@ function App() {
                   required
                 />
 
-                <label htmlFor="task-description">Description</label>
+                <label htmlFor="task-description">
+                  Description
+                </label>
+
                 <textarea
                   id="task-description"
                   placeholder="Add some details..."
@@ -450,6 +430,7 @@ function App() {
                 />
 
                 <label htmlFor="task-due-date">Due Date</label>
+
                 <input
                   id="task-due-date"
                   type="date"
@@ -458,7 +439,10 @@ function App() {
                 />
 
                 <div className="form-actions">
-                  <button type="submit" className="primary-button">
+                  <button
+                    type="submit"
+                    className="primary-button"
+                  >
                     Save Task
                   </button>
 

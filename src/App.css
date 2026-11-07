@@ -220,6 +220,22 @@ button {
   margin: 0;
 }
 
+.dashboard-action {
+  background: #7558e8;
+  color: white;
+  text-decoration: none;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.dashboard-action:hover {
+  background: #6043d0;
+}
+
 /* =========================================
    BUTTONS
 ========================================= */
@@ -260,30 +276,30 @@ button {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-  margin-bottom: 35px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
   background: white;
   border: 1px solid #eae9f0;
   border-radius: 12px;
-  padding: 22px;
+  padding: 14px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   min-width: 0;
 }
 
 .stat-icon {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
-  font-size: 19px;
+  font-size: 17px;
 }
 
 .purple {
@@ -306,16 +322,221 @@ button {
   color: #279c61;
 }
 
+.red {
+  background: #fff0f0;
+  color: #d34d4d;
+}
+
 .stat-card p {
   color: #85859f;
-  font-size: 12px;
-  margin: 0 0 6px;
+  font-size: 11px;
+  margin: 0 0 5px;
+  white-space: nowrap;
 }
 
 .stat-card h2 {
-  font-size: 27px;
+  font-size: 23px;
   color: #242238;
   margin: 0;
+}
+
+/* =========================================
+   DASHBOARD PANELS
+========================================= */
+
+.dashboard-content {
+  width: 100%;
+}
+
+.dashboard-panel {
+  background: white;
+  border: 1px solid #eae9f0;
+  border-radius: 12px;
+  padding: 22px;
+  min-width: 0;
+  margin-bottom: 20px;
+}
+
+.dashboard-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.dashboard-panel-heading h2 {
+  font-size: 17px;
+  color: #29263d;
+  margin: 0 0 6px;
+}
+
+.dashboard-panel-heading p {
+  color: #85859f;
+  font-size: 12px;
+  margin: 0;
+}
+
+.dashboard-panel-heading > strong {
+  color: #7558e8;
+  font-size: 23px;
+}
+
+.dashboard-panel-heading a {
+  color: #7558e8;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.dashboard-panel-heading a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   PRODUCTIVITY PROGRESS
+========================================= */
+
+.progress-panel {
+  margin-bottom: 20px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: #eeeaff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #7558e8;
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+.progress-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: #85859f;
+  font-size: 11px;
+}
+
+/* =========================================
+   UPCOMING AND RECENT TASKS
+========================================= */
+
+.dashboard-lower-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.dashboard-lower-grid .dashboard-panel {
+  margin-bottom: 0;
+}
+
+.dashboard-task-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid #f0eff4;
+}
+
+.dashboard-task-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dashboard-task-details strong {
+  color: #29263d;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-task-details span {
+  color: #85859f;
+  font-size: 11px;
+}
+
+.dashboard-task-status {
+  padding: 6px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dashboard-task-status.upcoming {
+  background: #fff1df;
+  color: #d58a27;
+}
+
+.dashboard-task-status.completed {
+  background: #e3f8ed;
+  color: #279c61;
+}
+
+.dashboard-task-status.active {
+  background: #eeeaff;
+  color: #7558e8;
+}
+
+/* =========================================
+   DASHBOARD EMPTY STATE
+========================================= */
+
+.dashboard-empty-state {
+  text-align: center;
+  padding: 25px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-empty-state > span {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #eeeaff;
+  color: #7558e8;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.dashboard-empty-state p {
+  color: #29263d;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 4px 0 0;
+}
+
+.dashboard-empty-state small {
+  color: #85859f;
+  font-size: 11px;
+}
+
+.dashboard-empty-state a {
+  color: #7558e8;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
 }
 
 /* =========================================
@@ -661,6 +882,84 @@ button {
 }
 
 /* =========================================
+   CLICKABLE TASK TITLES
+========================================= */
+
+.task-title-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.task-title-button:hover {
+  color: #7562d9;
+}
+
+.task-title-button:focus-visible {
+  outline: 2px solid #7562d9;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+/* =========================================
+   TASK DETAILS MODAL
+========================================= */
+
+.task-details-modal {
+  max-width: 550px;
+  width: 100%;
+}
+
+.task-detail-content {
+  margin: 24px 0;
+}
+
+.task-detail-content h3 {
+  font-size: 22px;
+  color: #29263d;
+  margin-bottom: 12px;
+}
+
+.task-detail-description {
+  color: #77748a;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+.task-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: #f7f7fb;
+  border-radius: 10px;
+}
+
+.task-detail-info div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.task-detail-info span {
+  color: #77748a;
+  font-size: 14px;
+}
+
+.task-detail-info strong {
+  color: #29263d;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* =========================================
    RESPONSIVE TABLET LAYOUT
 ========================================= */
 
@@ -670,7 +969,7 @@ button {
   }
 
   .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -685,6 +984,10 @@ button {
 
   .task-card {
     flex-wrap: wrap;
+  }
+
+  .dashboard-lower-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -750,8 +1053,28 @@ button {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 15px;
+  }
+
+  .stat-card p {
+    font-size: 10px;
+  }
+
+  .stat-card h2 {
+    font-size: 20px;
   }
 
   .tasks-section {
@@ -782,5 +1105,279 @@ button {
 
   .task-modal {
     padding: 22px;
+  }
+
+  .task-details-modal {
+    max-width: 100%;
+  }
+
+  .task-detail-info div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .task-detail-info strong {
+    text-align: left;
+  }
+
+  .dashboard-panel {
+    padding: 17px;
+  }
+
+  .dashboard-task-item {
+    align-items: flex-start;
+  }
+
+  .dashboard-panel-heading h2 {
+    font-size: 15px;
+  }
+}
+
+/* =========================================
+   REDESIGNED TASK DETAILS POPUP
+========================================= */
+
+.task-details-overlay {
+  backdrop-filter: blur(7px);
+  padding: 20px;
+}
+
+.redesigned-task-modal {
+  width: 100%;
+  max-width: 590px;
+  padding: 30px;
+  border-radius: 20px;
+  background: #ffffff;
+  animation: modalSlideIn 0.25s ease;
+}
+
+.task-details-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.task-details-label {
+  color: #77738e;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.task-details-topbar .modal-close {
+  position: static;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #f3f2f8;
+  color: #77738e;
+  font-size: 15px;
+}
+
+.task-details-topbar .modal-close:hover {
+  background: #e9e7f2;
+  color: #29263d;
+}
+
+.task-details-hero {
+  margin-bottom: 25px;
+}
+
+.task-details-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 17px;
+}
+
+.task-details-status.is-active {
+  background: #fff4e5;
+  color: #b7791f;
+}
+
+.task-details-status.is-completed {
+  background: #e8f8ef;
+  color: #218653;
+}
+
+.task-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.task-details-hero h2 {
+  color: #29263d;
+  font-size: 27px;
+  line-height: 1.35;
+  font-weight: 750;
+  margin: 0 0 9px;
+  overflow-wrap: anywhere;
+}
+
+.task-details-subtitle {
+  color: #89869b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.task-details-divider {
+  height: 1px;
+  background: #eeedf3;
+  margin-bottom: 25px;
+}
+
+.task-details-description-section {
+  margin-bottom: 25px;
+}
+
+.task-details-description-section h3 {
+  color: #39364e;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.task-details-description-section p {
+  background: #f8f7fb;
+  border: 1px solid #eeedf4;
+  border-radius: 12px;
+  padding: 16px;
+  color: #77738e;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+  min-height: 75px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.task-details-date-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 28px;
+}
+
+.task-date-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 13px;
+  background: #ffffff;
+  border: 1px solid #eeedf3;
+  border-radius: 13px;
+  min-width: 0;
+}
+
+.task-date-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  background: #f0edff;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.task-date-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.task-date-label {
+  color: #9290a2;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.task-date-card strong {
+  color: #39364e;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.task-details-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #eeedf3;
+}
+
+.task-details-footer button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+}
+
+.task-completion-button {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .redesigned-task-modal {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+
+  .task-details-hero h2 {
+    font-size: 22px;
+  }
+
+  .task-details-date-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-details-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .task-details-footer button {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   DELETE BUTTON INSIDE TASK DETAILS POPUP
+========================================= */
+
+.delete-task-modal-button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid #f3caca;
+  border-radius: 10px;
+  background: #fff1f1;
+  color: #d64545;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-task-modal-button:hover {
+  background: #ffe1e1;
+  border-color: #e8aaaa;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .delete-task-modal-button {
+    width: 100%;
   }
 }

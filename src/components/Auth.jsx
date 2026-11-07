@@ -51,7 +51,7 @@ function Auth({ onLogin }) {
       }
 
       // Pass the token to the main application.
-      onLogin(token)
+      onLogin(token, response.data.name)
     } catch (err) {
       const responseMessage = err.response?.data?.message
 
